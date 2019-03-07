@@ -33,6 +33,11 @@ x = UpSampling2D((2, 2))(x)
 decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
 autoencoder = Model(input_img, decoded)
+encoder = Model(input_img, encoded)
+encoded_input = Input(shape=(encoding_dim,))
+last_layer = autoencoder.layers[-1]
+decoder = Model(encoded_input, last_layer(encoded_input))
+
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
 autoencoder.fit(x_train_noisy, x_train,
@@ -42,8 +47,8 @@ autoencoder.fit(x_train_noisy, x_train,
                 validation_data=(x_test_noisy, x_test))
 #,callbacks=[TensorBoard(log_dir='/tmp/tb', histogram_freq=0, write_graph=False)])
 
-encoded_imgs = encoded.predict(x_test_noisy)
-decoded_imgs = decoded.predict(encoded_imgs)
+encoded_imgs = encoder.predict(x_test_noisy)
+decoded_imgs = decoder.predict(encoded_imgs)
 x_test_noisy.tofile("input_noising.dat")
 encoded_imgs.tofile("encoded_denoising.dat")
 decoded_imgs.tofile("decoded_denoising.dat")

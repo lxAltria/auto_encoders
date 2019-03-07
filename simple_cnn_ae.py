@@ -22,6 +22,11 @@ x = UpSampling2D((2, 2))(x)
 decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
 autoencoder = Model(input_img, decoded)
+encoder = Model(input_img, encoded)
+encoded_input = Input(shape=(encoding_dim,))
+last_layer = autoencoder.layers[-1]
+decoder = Model(encoded_input, last_layer(encoded_input))
+
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
 from keras.datasets import mnist
@@ -40,8 +45,8 @@ autoencoder.fit(x_train, x_train,
     shuffle=True,
     validation_data=(x_test, x_test))
 
-encoded_imgs = encoded.predict(x_test)
-decoded_imgs = decoded.predict(encoded_imgs)
+encoded_imgs = encoder.predict(x_test)
+decoded_imgs = decoder.predict(encoded_imgs)
 encoded_imgs.tofile("encoded_cnn.dat")
 decoded_imgs.tofile("decoded_cnn.dat")
 
