@@ -1,5 +1,5 @@
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
-from keras.models import Model
+from keras.models import Model, Sequential
 from keras.datasets import mnist
 import numpy as np
 
@@ -17,26 +17,39 @@ x_test_noisy = x_test + noise_factor * np.random.normal(loc=0.0, scale=1.0, size
 x_train_noisy = np.clip(x_train_noisy, 0., 1.)
 x_test_noisy = np.clip(x_test_noisy, 0., 1.)
 
-input_img = Input(shape=(28, 28, 1))  # adapt this if using `channels_first` image data format
+encoder = Sequential(name="encoder")
+encoder.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+encoder.add(MaxPooling2D((2, 2), padding='same'))
+encoder.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+encoder.add(MaxPooling2D((2, 2), padding='same'))
+decoder = Sequential(name="decoder")
+decoder.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+decoder.add(UpSampling2D((2, 2)))
+decoder.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+decoder.add(UpSampling2D((2, 2)))
+decoder.add(Conv2D(1, (3, 3), activation='sigmoid', padding='same'))
 
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
-x = MaxPooling2D((2, 2), padding='same')(x)
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
-encoded = MaxPooling2D((2, 2), padding='same')(x)
+autoencoder = Sequential(name="autoencoder")
+autoencoder.add(encoder)
+autoencoder.add(decoder)
 
-# at this point the representation is (7, 7, 32)
 
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(encoded)
-x = UpSampling2D((2, 2))(x)
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
-x = UpSampling2D((2, 2))(x)
-decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
-
-autoencoder = Model(input_img, decoded)
-encoder = Model(input_img, encoded)
-encoded_input = Input(shape=(encoding_dim,))
-last_layer = autoencoder.layers[-1]
-decoder = Model(encoded_input, last_layer(encoded_input))
+# input_img = Input(shape=(28, 28, 1))  # adapt this if using `channels_first` image data format
+# x = Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
+# x = MaxPooling2D((2, 2), padding='same')(x)
+# x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+# encoded = MaxPooling2D((2, 2), padding='same')(x)
+# # at this point the representation is (7, 7, 32)
+# x = Conv2D(32, (3, 3), activation='relu', padding='same')(encoded)
+# x = UpSampling2D((2, 2))(x)
+# x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+# x = UpSampling2D((2, 2))(x)
+# decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
+# autoencoder = Model(input_img, decoded)
+# encoder = Model(input_img, encoded)
+# encoded_input = Input(shape=(encoding_dim,))
+# last_layer = autoencoder.layers[-1]
+# decoder = Model(encoded_input, last_layer(encoded_input))
 
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
