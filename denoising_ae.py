@@ -62,6 +62,7 @@ autoencoder.fit(x_train_noisy, x_train,
 
 encoded_imgs = encoder.predict(x_test_noisy)
 decoded_imgs = decoder.predict(encoded_imgs)
+x_test_noisy = x_test_noisy.astype('float32')
 x_test_noisy.tofile("input_noising.dat")
 encoded_imgs.tofile("encoded_denoising.dat")
 decoded_imgs.tofile("decoded_denoising.dat")
