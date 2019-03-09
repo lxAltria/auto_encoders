@@ -76,5 +76,10 @@ autoencoder.fit(x_train, x_train,
 encoded_imgs = encoder.predict(x_test)
 decoded_imgs = decoder.predict(encoded_imgs)
 decoded_imgs = (decoded_imgs + min_test) * value_range_test
-encoded_imgs.tofile("encoded_cnn.dat")
-decoded_imgs.tofile("decoded_cnn.dat")
+encoded_imgs.tofile("encoded_cnn_test.dat")
+decoded_imgs.tofile("decoded_cnn_test.dat")
+encoded_imgs = encoder.predict(x_train)
+decoded_imgs = decoder.predict(encoded_imgs)
+decoded_imgs = (decoded_imgs + min_train) * value_range_train
+encoded_imgs.tofile("encoded_cnn_train.dat")
+decoded_imgs.tofile("decoded_cnn_train.dat")
