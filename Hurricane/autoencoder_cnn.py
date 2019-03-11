@@ -51,11 +51,11 @@ def build_encoder_simple():
 	encoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	encoder.add(MaxPooling2D((5, 5), padding='same'))
 	# 5 * 5 * 256
-	return encoder, (500*500)*1.0 / (5*5*256)
+	return encoder, (500*500)*1.0 / (5*5*512)
 
 def build_decoder():
 	decoder = Sequential(name="decoder")
-	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+	decoder.add(Conv2D(256, (3, 3), input_shape=(8, 8, 256,), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((2, 2)))
@@ -73,7 +73,7 @@ def build_decoder():
 
 def build_decoder_simple():
 	decoder = Sequential(name="decoder")
-	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+	decoder.add(Conv2D(512, (3, 3), input_shape=(5, 5, 512,), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((5, 5)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((5, 5)))
@@ -115,7 +115,7 @@ print("\n---------- Training data value range: {} ({} ~ {}) ----------".format(v
 print("---------- Testing data value range: {} ({} ~ {}) ----------\n".format(value_range_test, min_test, max_test))
 
 parallel_autoencoder.fit(x_train, x_train,
-    epochs=50,
+    epochs=80,
     batch_size=32,
     shuffle=True,
     validation_data=(x_test, x_test))
