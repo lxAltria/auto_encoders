@@ -87,11 +87,11 @@ def build_decoder_simple():
 num_gpu = get_available_gpus()
 encoder, ratio = build_encoder_simple()
 decoder = build_decoder_simple()
-autoencoder = Sequential(name="autoencoder", gpus=num_gpu)
+autoencoder = Sequential(name='autoencoder')
 autoencoder.add(encoder)
 autoencoder.add(decoder)
 print("using {} gpus".format(num_gpu))
-autoencoder = multi_gpu_model(autoencoder)
+autoencoder = multi_gpu_model(autoencoder, gpus=num_gpu)
 autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
 from load_data import load_Hurricane_data
