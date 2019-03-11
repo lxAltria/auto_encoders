@@ -120,13 +120,14 @@ autoencoder.fit(x_train, x_train,
 
 # save model
 model.save('autoencoder_{:.2f}.h5'.format(ratio))
+# save output
 encoded_imgs = encoder.predict(x_test)
 decoded_imgs = decoder.predict(encoded_imgs)
 decoded_imgs = decoded_imgs * value_range_test + min_test
-encoded_imgs.tofile("encoded_cnn_test.dat")
-decoded_imgs.tofile("decoded_cnn_test.dat")
+encoded_imgs.tofile("/tmp/xin/Hurricane/encoded_cnn_test.dat")
+decoded_imgs.tofile("/tmp/xin/Hurricane/decoded_cnn_test.dat")
 encoded_imgs = encoder.predict(x_train)
 decoded_imgs = decoder.predict(encoded_imgs)
 decoded_imgs = decoded_imgs * value_range_train + min_train
-encoded_imgs.tofile("encoded_cnn_train.dat")
-decoded_imgs.tofile("decoded_cnn_train.dat")
+encoded_imgs.tofile("/tmp/xin/Hurricane/encoded_cnn_train.dat")
+decoded_imgs.tofile("/tmp/xin/Hurricane/decoded_cnn_train.dat")
