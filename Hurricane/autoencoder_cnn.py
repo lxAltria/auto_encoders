@@ -1,6 +1,6 @@
 from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Cropping2D
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.utils.training_utils import multi_gpu_model
+from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.keras import backend as K
 from tensorflow.python.client import device_lib
 import numpy as np
@@ -84,14 +84,14 @@ def build_decoder_simple():
 	decoder.add(Conv2D(1, (3, 3), activation='sigmoid', padding='same'))
 	return decoder
 
-num_gpu = get_available_gpus()
+num_gpus = len(get_available_gpus())
 encoder, ratio = build_encoder_simple()
 decoder = build_decoder_simple()
 autoencoder = Sequential(name='autoencoder')
 autoencoder.add(encoder)
 autoencoder.add(decoder)
-print("****** using {} gpus ******".format(num_gpu))
-autoencoder = multi_gpu_model(autoencoder, gpus=num_gpu)
+print("****** using {} gpus ******".format(num_gpus))
+autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus)
 autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
 from load_data import load_Hurricane_data
@@ -99,7 +99,7 @@ import numpy as np
 
 x_train, x_test = load_Hurricane_data("Uf.dat")
 x_train = x_train.astype('float32')
-x_test = test.astype('float32')
+x_test = x_test.astype('float32')
 min_train = np.min(x_train)
 max_train = np.max(x_train)
 value_range_train = max_train - min_train
@@ -110,7 +110,8 @@ x_train = (x_train - min_train) / value_range_train
 x_test = (x_test - min_test) / value_range_test
 x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if using `channels_first` image data format
 x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
-print("Training data value range: {} ({} ~ {})".format(value_range_train, min_train, np.max(train)))
+print("\n---------- Training data value range: {} ({} ~ {}) ----------".format(value_range_train, min_train, max_train))
+print("---------- Testing data value range: {} ({} ~ {}) ----------\n".format(value_range_test, min_test, max_test))
 
 autoencoder.fit(x_train, x_train,
     epochs=50,
@@ -119,7 +120,7 @@ autoencoder.fit(x_train, x_train,
     validation_data=(x_test, x_test))
 
 # save model
-model.save('autoencoder_{:.2f}.h5'.format(ratio))
+autoencoder.save('autoencoder_{:.2f}.h5'.format(ratio))
 # save output
 encoded_imgs = encoder.predict(x_test)
 decoded_imgs = decoder.predict(encoded_imgs)
