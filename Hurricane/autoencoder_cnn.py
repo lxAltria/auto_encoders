@@ -92,8 +92,8 @@ autoencoder.add(encoder)
 autoencoder.add(decoder)
 
 print("\n---------- using {} gpus ----------\n".format(num_gpus))
-autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus)
-autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
+parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus)
+parallel_autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
 from load_data import load_Hurricane_data
 import numpy as np
@@ -114,7 +114,7 @@ x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `
 print("\n---------- Training data value range: {} ({} ~ {}) ----------".format(value_range_train, min_train, max_train))
 print("---------- Testing data value range: {} ({} ~ {}) ----------\n".format(value_range_test, min_test, max_test))
 
-autoencoder.fit(x_train, x_train,
+parallel_autoencoder.fit(x_train, x_train,
     epochs=50,
     batch_size=32,
     shuffle=True,
