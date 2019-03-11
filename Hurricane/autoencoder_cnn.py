@@ -1,8 +1,8 @@
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Cropping2D
-from keras.models import Model, Sequential
-from keras.utils.training_utils import multi_gpu_model
+from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Cropping2D
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.utils.training_utils import multi_gpu_model
+from tensorflow.keras import backend as K
 from tensorflow.python.client import device_lib
-from keras import backend as K
 import numpy as np
 
 def get_available_gpus():
@@ -90,7 +90,7 @@ decoder = build_decoder_simple()
 autoencoder = Sequential(name='autoencoder')
 autoencoder.add(encoder)
 autoencoder.add(decoder)
-print("using {} gpus".format(num_gpu))
+print("****** using {} gpus ******".format(num_gpu))
 autoencoder = multi_gpu_model(autoencoder, gpus=num_gpu)
 autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
