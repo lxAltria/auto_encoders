@@ -13,7 +13,7 @@ def build_encoder():
 	# using VGG16 architecture
 	encoder = Sequential(name="encoder")
 	# 500 * 500 * 1
-	encoder.add(ZeroPadding2D((6, 6)))
+	encoder.add(ZeroPadding2D((6, 6), input_shape=(500, 500, 1,)))
 	# 512 * 512 * 1
 	encoder.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
 	encoder.add(MaxPooling2D((2, 2), padding='same'))
@@ -55,7 +55,7 @@ def build_encoder_simple():
 
 def build_decoder():
 	decoder = Sequential(name="decoder")
-	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+	decoder.add(Conv2D(256, (3, 3), input_shape=(500, 500, 1,), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((2, 2)))
@@ -90,7 +90,8 @@ decoder = build_decoder_simple()
 autoencoder = Sequential(name='autoencoder')
 autoencoder.add(encoder)
 autoencoder.add(decoder)
-print("****** using {} gpus ******".format(num_gpus))
+
+print("\n---------- using {} gpus ----------\n".format(num_gpus))
 autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus)
 autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
@@ -115,7 +116,7 @@ print("---------- Testing data value range: {} ({} ~ {}) ----------\n".format(va
 
 autoencoder.fit(x_train, x_train,
     epochs=50,
-    batch_size=128,
+    batch_size=32,
     shuffle=True,
     validation_data=(x_test, x_test))
 
