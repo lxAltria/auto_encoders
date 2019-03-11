@@ -39,7 +39,7 @@ def build_encoder_simple():
 # using VGG16 architecture
 	encoder = Sequential(name="encoder")
 	# 500 * 500 * 1
-	encoder.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+	encoder.add(Conv2D(64, (3, 3), input_shape=(500, 500, 1,), activation='relu', padding='same'))
 	encoder.add(MaxPooling2D((2, 2), padding='same'))
 	# 250 * 250 * 64
 	encoder.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
@@ -55,7 +55,7 @@ def build_encoder_simple():
 
 def build_decoder():
 	decoder = Sequential(name="decoder")
-	decoder.add(Conv2D(256, (3, 3), input_shape=(500, 500, 1,), activation='relu', padding='same'))
+	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(UpSampling2D((2, 2)))
