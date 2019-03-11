@@ -1,6 +1,6 @@
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
-from keras.models import Model, Sequential
-from keras import backend as K
+from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras import backend as K
 
 encoder = Sequential(name="encoder")
 encoder.add(Conv2D(16, (3, 3), activation='relu', padding='same'))

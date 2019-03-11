@@ -1,5 +1,5 @@
-from keras.layers import Input, Dense
-from keras.models import Model
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.models import Model
 
 encoding_dim = 32
 input_img = Input(shape=(784,))

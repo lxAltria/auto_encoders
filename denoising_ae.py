@@ -1,6 +1,6 @@
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
-from keras.models import Model, Sequential
-from keras.datasets import mnist
+from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.datasets import mnist
 import numpy as np
 
 (x_train, _), (x_test, _) = mnist.load_data()
