@@ -62,29 +62,29 @@ def build_decoder():
 	decoder.add(Conv2D(512, (3, 3), input_shape=(4, 4, 512,), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(1, (3, 3), activation='sigmoid', padding='same'))
 	decoder.add(Cropping2D((6, 6)))
 	return decoder
@@ -124,17 +124,17 @@ def build_decoder_simple():
 	decoder.add(Conv2D(512, (3, 3), input_shape=(5, 5, 512,), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((5, 5), interpolation='bilinear'))
+	decoder.add(UpSampling2D((5, 5)))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((5, 5), interpolation='bilinear'))
+	decoder.add(UpSampling2D((5, 5)))
 	decoder.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
 	decoder.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-	decoder.add(UpSampling2D((2, 2), interpolation='bilinear'))
+	decoder.add(UpSampling2D((2, 2)))
 	decoder.add(Conv2D(1, (3, 3), activation='sigmoid', padding='same'))
 	return decoder
 
@@ -149,9 +149,9 @@ autoencoder.add(decoder)
 
 print("\n---------- using {} gpus ----------\n".format(num_gpus))
 parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus)
-# sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-# parallel_autoencoder.compile(optimizer=sgd, loss='mean_squared_error')
-parallel_autoencoder.compile(optimizer='Adam', loss='mean_squared_error')
+# opt = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+opt = optimizers.Adam(lr=0.01)
+parallel_autoencoder.compile(optimizer=opt, loss='mean_squared_error')
 
 from load_data import load_Hurricane_data
 import numpy as np
@@ -182,26 +182,33 @@ parallel_autoencoder.fit(x_train, x_train,
 
 # save model
 autoencoder.save('autoencoder_{:.2f}.h5'.format(ratio))
-# save output
+encoder.save('encoder_{:.2f}.h5'.format(ratio))
+decoder.save('decoder_{:.2f}.h5'.format(ratio))
+
+# evaluate output
+encoded_train = encoder.predict(x_train)
+decoded_train = decoder.predict(encoded_train)
+decoded_train = decoded_train * value_range_train + min_train
+encoded_test = encoder.predict(x_test)
+decoded_test = decoder.predict(encoded_test)
+decoded_test = decoded_test * value_range_test + min_test
+
+x_train, x_test = load_Hurricane_data("Uf.dat")
 from assess import PSNR
-encoded_imgs = encoder.predict(x_train)
-decoded_imgs = decoder.predict(encoded_imgs)
-decoded_imgs = decoded_imgs * value_range_train + min_train
-# encoded_imgs.tofile("/tmp/xin/Hurricane/encoded_cnn_train.dat")
-# decoded_imgs.tofile("/tmp/xin/Hurricane/decoded_cnn_train.dat")
 print("---------- Statistics for training data ----------")
 for i in range(len(x_train)):
 	psnr, rmse = PSNR(x_train[i], dec_train[i])
 	print("RMSE = {:.4g}, PSNR = {:.2f}".format(rmse, psnr))
 print("\n\n")
 
-encoded_imgs = encoder.predict(x_test)
-decoded_imgs = decoder.predict(encoded_imgs)
-decoded_imgs = decoded_imgs * value_range_test + min_test
-# encoded_imgs.tofile("/tmp/xin/Hurricane/encoded_cnn_test.dat")
-# decoded_imgs.tofile("/tmp/xin/Hurricane/decoded_cnn_test.dat")
 print("---------- Statistics for testing data ----------")
 for i in range(len(x_test)):
 	psnr, rmse = PSNR(x_test[i], dec_test[i])
 	print("RMSE = {:.4g}, PSNR = {:.2f}".format(rmse, psnr))
+
+# encoded_train.tofile("/tmp/xin/Hurricane/encoded_cnn_train.dat")
+# decoded_train.tofile("/tmp/xin/Hurricane/decoded_cnn_train.dat")
+# encoded_test.tofile("/tmp/xin/Hurricane/encoded_cnn_test.dat")
+# decoded_test.tofile("/tmp/xin/Hurricane/decoded_cnn_test.dat")
+
 
