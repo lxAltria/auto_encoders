@@ -49,11 +49,11 @@ def build_encoder():
 	encoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	encoder.add(MaxPooling2D((2, 2), padding='same'))
 	# 4 * 4 * 512
-	last_layer = ae.layers[-1]
+	last_layer = encoder.layers[-1]
 	shape = last_layer.output_shape
 	size = 1
-	for i in range(len(shape)):
-		size = size * shape[i]
+	for i in range(len(shape) - 1):
+		size = size * shape[i+1]
 	ratio = (500*500)*1.0 / size
 	return encoder, ratio
 
@@ -111,11 +111,11 @@ def build_encoder_simple():
 	encoder.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
 	encoder.add(MaxPooling2D((5, 5), padding='same'))
 	# 5 * 5 * 512
-	last_layer = ae.layers[-1]
+	last_layer = encoder.layers[-1]
 	shape = last_layer.output_shape
 	size = 1
-	for i in range(len(shape)):
-		size = size * shape[i]
+	for i in range(len(shape) - 1):
+		size = size * shape[i+1]
 	ratio = (500*500)*1.0 / size
 	return encoder, ratio
 
