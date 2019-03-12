@@ -32,12 +32,12 @@ x_train, x_test = load_Hurricane_data("Uf.dat")
 from assess import PSNR
 print("---------- Statistics for training data ----------")
 for i in range(len(x_train)):
-	psnr, rmse = PSNR(x_train[i], dec_train[i])
+	psnr, rmse = PSNR(x_train[i], decoded_train[i])
 	print("RMSE = {:.4g}, PSNR = {:.2f}".format(rmse, psnr))
 print("\n\n")
 
 print("---------- Statistics for testing data ----------")
 for i in range(len(x_test)):
-	psnr, rmse = PSNR(x_test[i], dec_test[i])
+	psnr, rmse = PSNR(x_test[i], decoded_test[i])
 	print("RMSE = {:.4g}, PSNR = {:.2f}".format(rmse, psnr))
 
