@@ -4,7 +4,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import sys
 
-def predict_and_evaluate():
+def predict_and_evaluate(ratio):
 	x_train, x_test = load_Hurricane_data("Uf.dat")
 	x_train = x_train.astype('float32')
 	x_test = x_test.astype('float32')
@@ -19,24 +19,24 @@ def predict_and_evaluate():
 	x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if using `channels_first` image data format
 	x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
 
-	encoder = load_model("encoder_{}.h5".format(sys.argv[1]))
-	decoder = load_model("decoder_{}.h5".format(sys.argv[1]))
+	encoder = load_model("encoder_{}.h5".format(ratio))
+	decoder = load_model("decoder_{}.h5".format(ratio))
 
 	encoded_train = encoder.predict(x_train)
 	decoded_train = decoder.predict(encoded_train)
 	encoded_test = encoder.predict(x_test)
 	decoded_test = decoder.predict(encoded_test)
 
-	print("---------- Statistics for normalized training data ----------")
-	for i in range(len(x_train)):
-		psnr, rmse = PSNR(x_train[i], decoded_train[i])
-		print("RMSE = {:.4g}, MSE = {:.4g}".format(rmse, rmse*rmse))
-	print("\n\n")
+	# print("---------- Statistics for normalized training data ----------")
+	# for i in range(len(x_train)):
+	# 	psnr, rmse = PSNR(x_train[i], decoded_train[i])
+	# 	print("RMSE = {:.4g}, MSE = {:.4g}".format(rmse, rmse*rmse))
+	# print("\n\n")
 
-	print("---------- Statistics for normalized testing data ----------")
-	for i in range(len(x_test)):
-		psnr, rmse = PSNR(x_test[i], decoded_test[i])
-		print("RMSE = {:.4g}, MSE = {:.4g}".format(rmse, rmse*rmse))
+	# print("---------- Statistics for normalized testing data ----------")
+	# for i in range(len(x_test)):
+	# 	psnr, rmse = PSNR(x_test[i], decoded_test[i])
+	# 	print("RMSE = {:.4g}, MSE = {:.4g}".format(rmse, rmse*rmse))
 
 	decoded_train = decoded_train * value_range_train + min_train
 	decoded_train = decoded_train.reshape([-1, 100, 500, 500])
@@ -76,7 +76,7 @@ def evaluate(dec_train_file, dec_test_file):
 		psnr, rmse = PSNR(x_test[i], decoded_test[i])
 		print("RMSE = {:.4g}, PSNR = {:.2f}".format(rmse, psnr))
 
-if(len(sys.argv) > 1):
-	evaluate()
+if(len(sys.argv) > 2):
+	evaluate(sys.argv[1], sys.argv[2])
 else:
-	predict_and_evaluate(sys.argv[1], sys.argv[2])
+	predict_and_evaluate(sys.argv[1])

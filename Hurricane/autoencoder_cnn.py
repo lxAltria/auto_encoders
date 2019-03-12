@@ -148,7 +148,7 @@ autoencoder.add(encoder)
 autoencoder.add(decoder)
 
 print("\n---------- using {} gpus ----------\n".format(num_gpus))
-parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus)
+parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus, cpu_relocation=True)
 # opt = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 opt = optimizers.Adam(lr=0.001)
 parallel_autoencoder.compile(optimizer=opt, loss='mean_squared_error')
@@ -175,13 +175,13 @@ print("---------- Testing data value range: {} ({} ~ {}) ----------".format(valu
 print("\n")
 
 parallel_autoencoder.fit(x_train, x_train,
-    epochs=30,
+    epochs=40,
     batch_size=32,
     shuffle=True,
     validation_data=(x_test, x_test))
 
 # save model
-autoencoder.save('autoencoder_{:.2f}.h5'.format(ratio))
+parallel_autoencoder.save('autoencoder_{:.2f}.h5'.format(ratio))
 encoder.save('encoder_{:.2f}.h5'.format(ratio))
 decoder.save('decoder_{:.2f}.h5'.format(ratio))
 
@@ -210,9 +210,9 @@ for i in range(len(x_test)):
 	psnr, rmse = PSNR(x_test[i], decoded_test[i])
 	print("RMSE = {:.4g}, PSNR = {:.2f}".format(rmse, psnr))
 
-# encoded_train.tofile("/tmp/xin/Hurricane/encoded_cnn_train.dat")
-# decoded_train.tofile("/tmp/xin/Hurricane/decoded_cnn_train.dat")
-# encoded_test.tofile("/tmp/xin/Hurricane/encoded_cnn_test.dat")
-# decoded_test.tofile("/tmp/xin/Hurricane/decoded_cnn_test.dat")
+encoded_train.tofile("/tmp/xin/Hurricane/encoded_cnn_train.dat")
+decoded_train.tofile("/tmp/xin/Hurricane/decoded_cnn_train.dat")
+encoded_test.tofile("/tmp/xin/Hurricane/encoded_cnn_test.dat")
+decoded_test.tofile("/tmp/xin/Hurricane/decoded_cnn_test.dat")
 
 
