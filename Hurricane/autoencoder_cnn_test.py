@@ -90,12 +90,11 @@ num_gpus = len(get_available_gpus())
 autoencoder = Sequential(name='autoencoder')
 ratio = build_encoder(autoencoder)
 build_decoder(autoencoder)
+autoencoder.summary()
 
-print("\n---------- using {} gpus ----------\n".format(num_gpus))
-parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus, cpu_relocation=True)
 # opt = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 opt = optimizers.Adam(lr=0.001)
-parallel_autoencoder.compile(optimizer=opt, loss='mean_squared_error')
+autoencoder.compile(optimizer=opt, loss='mean_squared_error')
 
 from load_data import load_Hurricane_data
 import numpy as np
@@ -118,7 +117,7 @@ print("---------- Training data value range: {} ({} ~ {}) ----------".format(val
 print("---------- Testing data value range: {} ({} ~ {}) ----------".format(value_range_test, min_test, max_test))
 print("\n")
 
-parallel_autoencoder.fit(x_train, x_train,
+autoencoder.fit(x_train, x_train,
     epochs=10,
     batch_size=32,
     shuffle=True,
@@ -128,10 +127,10 @@ parallel_autoencoder.fit(x_train, x_train,
 autoencoder.save('autoencoder_{:.2f}.h5'.format(ratio))
 
 # evaluate output
-decoded_train = decoder.predict(x_train)
+decoded_train = autoencoder.predict(x_train)
 decoded_train = decoded_train * value_range_train + min_train
 decoded_train = decoded_train.reshape([-1, 100, 500, 500])
-decoded_test = decoder.predict(x_test)
+decoded_test = autoencoder.predict(x_test)
 decoded_test = decoded_test * value_range_test + min_test
 decoded_test = decoded_test.reshape([-1, 100, 500, 500])
 
