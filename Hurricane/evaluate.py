@@ -2,9 +2,10 @@ from load_data import load_Hurricane_data
 from assess import PSNR
 import numpy as np
 from tensorflow.keras.models import load_model
+from buile_models import build_encoder, build_decoder, build_encoder_simple, build_decoder_simple
 import sys
 
-def predict_and_evaluate(ratio):
+def predict_and_evaluate():
 	x_train, x_test = load_Hurricane_data("Uf.dat")
 	x_train = x_train.astype('float32')
 	x_test = x_test.astype('float32')
@@ -19,9 +20,10 @@ def predict_and_evaluate(ratio):
 	x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if using `channels_first` image data format
 	x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
 
-	encoder = load_model("encoder_{}.h5".format(ratio))
-	decoder = load_model("decoder_{}.h5".format(ratio))
-
+	encoder, ratio = build_encoder()
+	decoder = build_decoder()
+	encoder.load_weights("encoder_weights_{}.h5".format(ratio))
+	decoder.load_weights("decoder_weights_{}.h5".format(ratio))
 	encoded_train = encoder.predict(x_train)
 	decoded_train = decoder.predict(encoded_train)
 	encoded_test = encoder.predict(x_test)
@@ -79,4 +81,4 @@ def evaluate(dec_train_file, dec_test_file):
 if(len(sys.argv) > 2):
 	evaluate(sys.argv[1], sys.argv[2])
 else:
-	predict_and_evaluate(sys.argv[1])
+	predict_and_evaluate()
