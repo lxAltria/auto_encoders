@@ -52,7 +52,8 @@ parallel_autoencoder.fit(x_train, x_train,
     validation_data=(x_test, x_test))
 
 # save model
-autoencoder.save_weights('autoencoder_weights_{:.2f}.h5'.format(ratio))
+autoencoder.set_weights(parallel_autoencoder.get_weights())
+parallel_autoencoder.save_weights('parallel_autoencoder_weights_{:.2f}.h5'.format(ratio))
 encoder.save_weights('encoder_weights_{:.2f}.h5'.format(ratio))
 decoder.save_weights('decoder_weights_{:.2f}.h5'.format(ratio))
 

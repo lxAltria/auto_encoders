@@ -22,8 +22,8 @@ def predict_and_evaluate():
 
 	encoder, ratio = build_encoder()
 	decoder = build_decoder()
-	encoder.load_weights("encoder_weights_{}.h5".format(ratio))
-	decoder.load_weights("decoder_weights_{}.h5".format(ratio))
+	encoder.load_weights("encoder_weights_{:.2f}.h5".format(ratio))
+	decoder.load_weights("decoder_weights_{:.2f}.h5".format(ratio))
 	encoded_train = encoder.predict(x_train)
 	decoded_train = decoder.predict(encoded_train)
 	encoded_test = encoder.predict(x_test)
