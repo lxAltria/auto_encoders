@@ -2,7 +2,7 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.python.client import device_lib
 from tensorflow.keras import optimizers
-from buile_models import build_encoder, build_decoder, build_encoder_simple, build_decoder_simple
+from build_models import build_encoder, build_decoder, build_encoder_simple, build_decoder_simple
 import numpy as np
 
 def get_available_gpus():

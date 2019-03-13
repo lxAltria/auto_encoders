@@ -2,7 +2,7 @@ from load_data import load_Hurricane_data
 from assess import PSNR
 import numpy as np
 from tensorflow.keras.models import load_model
-from buile_models import build_encoder, build_decoder, build_encoder_simple, build_decoder_simple
+from build_models import build_encoder, build_decoder, build_encoder_simple, build_decoder_simple
 import sys
 
 def predict_and_evaluate():
