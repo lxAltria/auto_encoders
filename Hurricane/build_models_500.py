@@ -1,7 +1,5 @@
-from tensorflow.keras.layers 
-import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Cropping2D
-from tensorflow.keras.models 
-import Model, Sequential
+from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Cropping2D
+from tensorflow.keras.models import Model, Sequential
 import numpy as np
 
 def build_encoder(input_shape, num_filter1):
