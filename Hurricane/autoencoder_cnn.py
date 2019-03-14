@@ -22,7 +22,7 @@ autoencoder.add(decoder)
 
 print("\n---------- using {} gpus ----------\n".format(num_gpus))
 parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus, cpu_relocation=True)
-opt = optimizers.Adam()
+opt = optimizers.Adam(lr=0.001)
 parallel_autoencoder.compile(optimizer=opt, loss='mean_squared_error')
 
 x_train, x_test = load_Hurricane_data("Uf.dat")
@@ -32,8 +32,8 @@ x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if usin
 x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
 
 print("\n")
-print("---------- Training data value range: {} ({} ~ {}) ----------".format(value_range_train, min_train, np.max(x_train)))
-print("---------- Testing data value range: {} ({} ~ {}) ----------".format(value_range_test, min_test, np.max(x_test)))
+print("---------- Training data value range: {} ({} ~ {}) ----------".format(value_range_train, min_train, min_train + value_range_train))
+print("---------- Testing data value range: {} ({} ~ {}) ----------".format(value_range_test, min_test, min_test + value_range_test))
 print("\n")
 
 parallel_autoencoder.fit(x_train, x_train,
