@@ -1,8 +1,7 @@
-from load_data import load_Hurricane_data
+from utils import load_Hurricane_data
 from assess import PSNR
 import numpy as np
 from tensorflow.keras.models import load_model
-from build_models import build_encoder, build_decoder, build_encoder_simple, build_decoder_simple
 import sys
 
 def predict_and_evaluate():
@@ -28,17 +27,6 @@ def predict_and_evaluate():
 	decoded_train = decoder.predict(encoded_train)
 	encoded_test = encoder.predict(x_test)
 	decoded_test = decoder.predict(encoded_test)
-
-	# print("---------- Statistics for normalized training data ----------")
-	# for i in range(len(x_train)):
-	# 	psnr, rmse = PSNR(x_train[i], decoded_train[i])
-	# 	print("RMSE = {:.4g}, MSE = {:.4g}".format(rmse, rmse*rmse))
-	# print("\n\n")
-
-	# print("---------- Statistics for normalized testing data ----------")
-	# for i in range(len(x_test)):
-	# 	psnr, rmse = PSNR(x_test[i], decoded_test[i])
-	# 	print("RMSE = {:.4g}, MSE = {:.4g}".format(rmse, rmse*rmse))
 
 	decoded_train = decoded_train * value_range_train + min_train
 	decoded_train = decoded_train.reshape([-1, 100, 500, 500])
