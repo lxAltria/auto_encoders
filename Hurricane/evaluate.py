@@ -1,4 +1,4 @@
-from utils import load_Hurricane_data
+from utils import load_Hurricane_data, normalize, denormalize
 from assess import PSNR
 import numpy as np
 from tensorflow.keras.models import load_model
