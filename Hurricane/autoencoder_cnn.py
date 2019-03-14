@@ -2,7 +2,7 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.python.client import device_lib
 from tensorflow.keras import optimizers
-from build_models import build_encoder, build_decoder
+from build_models_500 import build_encoder, build_decoder
 from utils import load_Hurricane_data, get_ratio, normalize, denormalize
 import numpy as np
 
