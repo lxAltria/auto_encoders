@@ -11,7 +11,7 @@ def predict_and_evaluate(ratio):
 	x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if using `channels_first` image data format
 	x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
 
-	parallel_autoencoder = load_model("parallel_autoencoder_{:.2f}.h5".format(ratio))
+	parallel_autoencoder = load_model("parallel_autoencoder_{}.h5".format(ratio))
 	autoencoder = parallel_autoencoder.get_layer('autoencoder')
 	encoder = autoencoder.get_layer('encoder')
 	decoder = autoencoder.get_layer('decoder')
