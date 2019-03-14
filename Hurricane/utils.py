@@ -12,7 +12,7 @@ def get_ratio(input_shape, output_shape):
 	output_size = 1
 	for i in range(len(input_shape)):
 		input_size = input_size * input_shape[i]
-		output_size = output_size * output_shape[i+1]
+		output_size = output_size * output_shape[i]
 	ratio = input_size*1.0 / output_size
 	return ratio
 

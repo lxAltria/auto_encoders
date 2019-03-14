@@ -32,8 +32,8 @@ x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if usin
 x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
 
 print("\n")
-print("---------- Training data value range: {} ({} ~ {}) ----------".format(value_range_train, min_train, max_train))
-print("---------- Testing data value range: {} ({} ~ {}) ----------".format(value_range_test, min_test, max_test))
+print("---------- Training data value range: {} ({} ~ {}) ----------".format(value_range_train, min_train, np.max(x_train)))
+print("---------- Testing data value range: {} ({} ~ {}) ----------".format(value_range_test, min_test, np.max(x_test)))
 print("\n")
 
 parallel_autoencoder.fit(x_train, x_train,
