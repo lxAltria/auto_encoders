@@ -4,33 +4,25 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import sys
 
-def predict_and_evaluate():
+def predict_and_evaluate(ratio):
 	x_train, x_test = load_Hurricane_data("Uf.dat")
-	x_train = x_train.astype('float32')
-	x_test = x_test.astype('float32')
-	min_train = np.min(x_train)
-	max_train = np.max(x_train)
-	value_range_train = max_train - min_train
-	min_test = np.min(x_test)
-	max_test = np.max(x_test)
-	value_range_test = max_test - min_test
-	x_train = (x_train - min_train) / value_range_train
-	x_test = (x_test - min_test) / value_range_test
+	x_train, min_train, value_range_train = normalize(x_train)
+	x_test, min_test, value_range_test = normalize(x_test)
 	x_train = np.reshape(x_train, (len(x_train), 500, 500, 1))  # adapt this if using `channels_first` image data format
 	x_test = np.reshape(x_test, (len(x_test), 500, 500, 1))  # adapt this if using `channels_first` image data format
 
-	encoder, ratio = build_encoder()
-	decoder = build_decoder()
-	encoder.load_weights("encoder_weights_{:.2f}.h5".format(ratio))
-	decoder.load_weights("decoder_weights_{:.2f}.h5".format(ratio))
+	parallel_autoencoder = load_model("parallel_autoencoder_{:.2f}.h5".format(ratio))
+	autoencoder = parallel_autoencoder.get_layer('autoencoder')
+	encoder = autoencoder.get_layer('encoder')
+	decoder = autoencoder.get_layer('decoder')
+
 	encoded_train = encoder.predict(x_train)
 	decoded_train = decoder.predict(encoded_train)
 	encoded_test = encoder.predict(x_test)
 	decoded_test = decoder.predict(encoded_test)
-
-	decoded_train = decoded_train * value_range_train + min_train
+	decoded_train = denormalize(decoded_train, min_train, value_range_train)
 	decoded_train = decoded_train.reshape([-1, 100, 500, 500])
-	decoded_test = decoded_test * value_range_test + min_test
+	decoded_test = denormalize(decoded_test, min_test, value_range_test)
 	decoded_test = decoded_test.reshape([-1, 100, 500, 500])
 
 	x_train, x_test = load_Hurricane_data("Uf.dat")
@@ -69,4 +61,4 @@ def evaluate(dec_train_file, dec_test_file):
 if(len(sys.argv) > 2):
 	evaluate(sys.argv[1], sys.argv[2])
 else:
-	predict_and_evaluate()
+	predict_and_evaluate(sys.argv[1])

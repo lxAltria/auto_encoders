@@ -24,7 +24,7 @@ def normalize(data):
 	return data, min_data, value_range
 
 def denormalize(data, min_data, value_range):
-	data = data * value_range + min_train
+	data = data * value_range + min_data
 	return data
 
 def get_split_positions(block_size, block_num):
