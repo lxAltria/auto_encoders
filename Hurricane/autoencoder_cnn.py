@@ -12,18 +12,20 @@ def get_available_gpus():
   return [x.name for x in local_device_protos if x.device_type == 'GPU']
 
 if len(sys.argv) < 3:
-  print("usage: python autoencoder_cnn.py block_size num_filters")
-num_gpus = len(get_available_gpus())
+  print("Usage: python autoencoder_cnn.py block_size num_filters")
+  exit(0)
 block_size = int(sys.argv[1])
-input_shape = (block_size, block_size, 1)
 num_filters = int(sys.argv[2])
-encoder, compressed_shape = build_encoder(input_shape, num_filters)
+
+input_shape = (block_size, block_size, 1)
+encoder, compressed_shape, num_filters = build_encoder(input_shape, num_filters)
 ratio = get_ratio(input_shape, compressed_shape)
 decoder = build_decoder(compressed_shape, num_filters)
 autoencoder = Sequential(name='autoencoder')
 autoencoder.add(encoder)
 autoencoder.add(decoder)
 
+num_gpus = len(get_available_gpus())
 print("\n---------- using {} gpus ----------\n".format(num_gpus))
 parallel_autoencoder = multi_gpu_model(autoencoder, gpus=num_gpus, cpu_relocation=True)
 opt = optimizers.Adam(lr=0.001)
