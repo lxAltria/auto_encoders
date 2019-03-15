@@ -74,11 +74,11 @@ def synthesize_data(data, block_size):
 	for i in range(num):
 		for j in range(n):
 			for k in range(n):
-				data_syn[i, pos[j]:pos[j] + block_size, pos[k]:pos[k] + block_size] = data_syn[i, pos[j]:pos[j] + block_size, pos[k]:pos[k] + block_size] + tmp_data[num, j, k]
+				data_syn[i, pos[j]:pos[j] + block_size, pos[k]:pos[k] + block_size] = data_syn[i, pos[j]:pos[j] + block_size, pos[k]:pos[k] + block_size] + tmp_data[i, j, k]
 	count_matrix = np.ones([500, 500], dtype=np.int8)
 	for j in range(n - 1):
 		for k in range(n - 1):
-			count_matrix[pos[j+1]:pos[k+1] + block_size, pos[k+1]:pos[k+1] + block_size] = count_matrix[pos[j+1]:pos[k+1] + block_size, pos[k+1]:pos[k+1] + block_size] + 1
+			count_matrix[pos[j+1]:pos[j+1] + block_size, pos[k+1]:pos[k+1] + block_size] = count_matrix[pos[j+1]:pos[j+1] + block_size, pos[k+1]:pos[k+1] + block_size] + 1
 	data_syn = data_syn / count_matrix
 	return data_syn
 
