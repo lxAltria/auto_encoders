@@ -1,8 +1,19 @@
 import numpy as np
+import os
 
-def load_Hurricane_data(filename, folder="/tmp/xin/Hurricane"):
-	data = np.fromfile("{}/{}".format(folder, filename), dtype=np.float32)
-	data = data.reshape([-1, 500, 500, 1])
+def load_Hurricane_data(filename, folder="/tmp/xin/Hurricane", resize=False, block_size=128):
+	if not resize:
+		data = np.fromfile("{}/{}".format(folder, filename), dtype=np.float32)
+		data = data.reshape([-1, 500, 500, 1])
+	else:
+		fpath = "/tmp/xin/Hurricane/resized_{}_{}".format(block_size, filename)
+		if os.path.exists(fpath):
+			data = np.fromfile(fpath, dtype=np.float32)
+		else:
+			data = np.fromfile("{}/{}".format(folder, filename), dtype=np.float32)
+			data = data.reshape([-1, 500, 500, 1])
+			data = resize_data(data, block_size)
+			data.tofile(fpath)
 	num = len(data)
 	split_ind = num * 40 // 48
 	return data[:split_ind], data[split_ind:]
